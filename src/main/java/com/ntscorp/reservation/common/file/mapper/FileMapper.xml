@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ntscorp.reservation.common.file.mapper.FileMapper">
+	<insert id="insertImageFile" parameterType="com.ntscorp.reservation.common.file.vo.ImageFile" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO file_info
+		(file_name, save_file_name, content_type, create_date, modify_date) 
+		VALUES (#{fileName}, #{saveFileName}, #{contentType}, NOW(), NOW())
+	</insert>
+	
+	<select id="selectImageFile" resultType="com.ntscorp.reservation.common.file.vo.ImageFile">
+		SELECT 
+		file_name 		AS fileName, 
+		save_file_name 	AS saveFileName,
+		content_type 	AS contentType, 
+		delete_flag		AS deleteFlag,
+		create_date 	AS createDate, 
+		modify_date 	AS modifyDate
+		FROM file_info
+		WHERE id = #{fileId}
+	</select>
+</mapper>

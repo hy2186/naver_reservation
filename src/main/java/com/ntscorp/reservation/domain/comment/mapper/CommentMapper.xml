@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ntscorp.reservation.domain.comment.mapper.CommentMapper">
+	<resultMap id="comment" type="com.ntscorp.reservation.domain.comment.dto.Comment">
+		<collection property="commentImages" column="commentId" select="selectCommentImageList"/>
+	</resultMap>
+	
+	<select id="selectCommentListByProductId" resultMap="comment">
+		SELECT 
+		comment.id 						AS commentId, 
+		reservation.product_id 			AS productId, 
+		reservation.id 					AS reservationInfoId, 
+		comment.score 					AS score, 
+		comment.comment 				AS comment, 
+		comment.create_date 			AS createDate, 
+		comment.modify_date 			AS modifyDate, 
+		reservation.reservation_name 	AS reservationName, 
+		reservation.reservation_tel 	AS reservationTelephone,
+		reservation.reservation_email 	AS reservationEmail, 
+		reservation.reservation_date 	AS reservationDate 
+		FROM reservation_info reservation 
+		INNER JOIN reservation_user_comment comment ON reservation.id = comment.reservation_info_id 																
+		WHERE reservation.product_id = #{productId}
+	</select>
+	
+	<select id="selectCommentLimitListByProductId" resultMap="comment">
+		SELECT 
+		comment.id 						AS commentId, 
+		reservation.product_id 			AS productId, 
+		reservation.id 					AS reservationInfoId, 
+		comment.score 					AS score, 
+		comment.comment 				AS comment, 
+		comment.create_date 			AS createDate, 
+		comment.modify_date 			AS modifyDate, 
+		reservation.reservation_name 	AS reservationName, 
+		reservation.reservation_tel 	AS reservationTelephone, 
+		reservation.reservation_email 	AS reservationEmail, 
+		reservation.reservation_date 	AS reservationDate 
+		FROM reservation_info reservation 
+		INNER JOIN reservation_user_comment comment ON reservation.id = comment.reservation_info_id 																
+		WHERE reservation.product_id = #{productId} LIMIT #{limit}
+	</select>
+	
+	<select id="selectCommentImageList" resultType="com.ntscorp.reservation.domain.comment.dto.CommentImage">
+		SELECT 
+		id 								AS commentImageId, 
+		reservation_info_id 			AS reservationInfoId, 
+		reservation_user_comment_id 	AS reservationUserCommentId, 
+		file_id 						AS fileId
+		FROM reservation_user_comment_image
+		WHERE reservation_user_comment_id = #{commentId}
+	</select>
+	
+	<select id="selectAverageScoreByProductId" resultType="double">
+		SELECT AVG(comment.score) 
+		FROM reservation_user_comment comment 
+		WHERE comment.product_id = #{productId}
+	</select>
+	
+	<select id="selectCommentCountByProductId" resultType="int">
+		SELECT COUNT(*) 
+		FROM reservation_user_comment comment 
+		WHERE comment.product_id = #{productId}
+	</select>
+	
+	<insert id="insertComment" parameterType="com.ntscorp.reservation.domain.comment.dto.CommentParam" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO reservation_user_comment 
+		(product_id, reservation_info_id, score, comment, create_date, modify_date)
+		VALUES (#{productId}, #{reservationInfoId}, #{score}, #{comment}, NOW(), NOW())
+	</insert>
+	
+	<insert id="insertCommentImage" parameterType="com.ntscorp.reservation.domain.comment.dto.CommentImage">
+		INSERT INTO reservation_user_comment_image 
+		(reservation_info_id, reservation_user_comment_id, file_id)
+		VALUES (#{reservationInfoId}, #{reservationUserCommentId}, #{fileId})
+	</insert>
+</mapper>

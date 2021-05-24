@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ntscorp.reservation.domain.product.mapper.ProductMapper"> 
+	<select id="selectProductAllCategory" resultType="com.ntscorp.reservation.domain.product.dto.Product">
+		SELECT 
+		display.id 				AS displayInfoId, 
+		display.place_name 		AS placeName,
+		product.content 		AS productContent, 
+		product.description 	AS productDescription,
+		product.id 				AS productId, 
+		image.file_id 			AS imageFileId
+		FROM product
+		INNER JOIN display_info display ON product.id = display.product_id
+		INNER JOIN product_image image ON product.id = image.product_id
+		WHERE image.type = 'th' LIMIT #{start}, #{limit}
+	</select>
+	
+	<select id="selectProductByCategoryId" resultType="com.ntscorp.reservation.domain.product.dto.Product">
+		SELECT 
+		display.id 				AS displayInfoId, 
+		display.place_name 		AS placeName,
+		product.content 		AS productContent, 
+		product.description 	AS productDescription,
+		product.id 				AS productId, 
+		image.file_id 			AS imageFileId
+		FROM product
+		INNER JOIN display_info display ON product.id = display.product_id
+		INNER JOIN product_image image ON product.id = image.product_id
+		WHERE product.category_id = #{categoryId} AND image.type = 'th' LIMIT #{start}, #{limit}
+	</select>
+	
+	<select id="selectProductCountAll" resultType="int">
+		SELECT COUNT(*)
+		FROM category
+		INNER JOIN product ON category.id = product.category_id
+		INNER JOIN display_info display ON product.id = display.product_id
+	</select>
+	
+	<select id="selectProductCountByCategoryId" resultType="int">
+		SELECT COUNT(*)
+		FROM category
+		INNER JOIN product ON category.id = product.category_id
+		INNER JOIN display_info display ON product.id = display.product_id
+		WHERE category.id = #{categoryId}
+	</select>
+	
+	<select id="selectProductImageListByProductId" resultType="com.ntscorp.reservation.domain.product.dto.ProductImage">
+		SELECT 
+		image.id 			AS productImageId, 
+		image.product_id 	AS productId, 
+		image.type 			AS type,
+		image.file_id 		AS fileId
+		FROM product_image image
+		WHERE image.product_id = #{productId} AND image.type IN ('ma', 'et') LIMIT #{limit}
+	</select>
+	
+	<select id="selectProductPriceListByProductId" resultType="com.ntscorp.reservation.domain.product.dto.ProductPrice">
+		SELECT 
+		price.id 				AS productPriceId, 
+		price.product_id 		AS productId, 
+		price.price_type_name 	AS priceTypeName,
+		price.price 			AS price, 
+		price.discount_rate 	AS discountRate, 
+		price.create_date 		AS createDate, 
+		price.modify_date 		AS modifyDate
+		FROM product_price price
+		WHERE price.product_id = #{productId}
+	</select>
+</mapper>

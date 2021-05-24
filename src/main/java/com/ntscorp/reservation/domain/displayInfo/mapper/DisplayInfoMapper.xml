@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ntscorp.reservation.domain.displayInfo.mapper.DisplayInfoMapper">
+	<select id="selectDisplayInfoById" resultType="com.ntscorp.reservation.domain.displayInfo.dto.DisplayInfo">
+		SELECT 
+		display.id 				AS displayInfoId, 
+		product.id 				AS productId, 
+		display.opening_hours 	AS openingHours,
+		display.place_name 		AS placeName, 
+		display.place_lot 		AS placeLot, 
+		display.place_street 	AS placeStreet,
+		display.tel 			AS telePhone, 
+		display.homepage 		AS homepage, 
+		display.email 			AS email,
+		display.create_date 	AS createDate, 
+		display.modify_date 	AS modifyDate,
+		product.description 	AS productDescription, 
+		product.content 		AS productContent, 
+		product.event 			AS productEvent,
+		category.id 			AS categoryId, 
+		category.name 			AS categoryName
+		FROM display_info display
+		INNER JOIN product ON product.id = display.product_id
+		INNER JOIN category ON category.id = product.category_id
+		WHERE display.id = #{displayInfoId}
+	</select>
+	
+	<select id="selectDisplayInfoImageById" resultType="com.ntscorp.reservation.domain.displayInfo.dto.DisplayInfoImage">
+		SELECT 
+		image.id 				AS displayInfoImageId, 
+		image.display_info_id 	AS displayInfoId,
+		image.file_id			AS fileId
+		FROM display_info_image image
+		WHERE image.display_info_id = #{displayInfoId}
+	</select>
+</mapper>

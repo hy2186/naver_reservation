@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ntscorp.reservation.domain.category.mapper.CategoryMapper"> 
+	<select id="selectCategoryAll" resultType="com.ntscorp.reservation.domain.category.dto.Category">
+		SELECT 
+		category.id 		AS id,
+		MAX(category.name) 	AS name, 
+		COUNT(*) 			AS count 
+		FROM category 
+		INNER JOIN product ON category.id = product.category_id 
+		GROUP BY category.id
+	</select>
+</mapper>

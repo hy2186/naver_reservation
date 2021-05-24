@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ntscorp.reservation.domain.promotion.mapper.PromotionMapper"> 
+	<select id="selectPromotionAll" resultType="com.ntscorp.reservation.domain.promotion.dto.Promotion">
+		SELECT 
+		promotion.id 			AS id,
+		promotion.product_id 	AS productId, 
+		image.file_id 			AS fileId,
+		product.description 	AS productDescription, 
+		display.place_name 		AS placeName
+		FROM product
+		INNER JOIN promotion ON product.id = promotion.product_id
+		INNER JOIN product_image image ON product.id = image.product_id
+		INNER JOIN display_info display ON product.id = display.product_id
+		WHERE image.type = 'th'
+	</select>
+</mapper>

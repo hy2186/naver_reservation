@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ntscorp.reservation.domain.reservation.mapper.ReservationMapper">
+	<resultMap id="reservationInfo" type="com.ntscorp.reservation.domain.reservation.dto.ReservationInfo">
+		<id property="reservationInfoId" column="reservationInfoId" />
+  		<result property="displayInfoId" column="displayInfoId"/>
+		<association property="displayInfo" column="displayInfoId" select="com.ntscorp.reservation.domain.displayInfo.mapper.DisplayInfoMapper.selectDisplayInfoById"/>
+		<association property="totalPrice" column="reservationInfoId" select="selectTotalPriceByReservationId"/>
+	</resultMap>
+
+	<insert id="insertReservation" parameterType="com.ntscorp.reservation.domain.reservation.dto.ReservationParam" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO reservation_info 
+		(product_id, display_info_id, reservation_name, reservation_tel, reservation_email, reservation_date, create_date, modify_date) 
+		VALUES (#{productId}, #{displayInfoId}, #{reservationName}, #{reservationTelephone}, #{reservationEmail}, #{reservationYearMonthDay}, NOW(), NOW())
+	</insert>
+	
+	<insert id="insertReservationPrice" parameterType="java.util.List">
+		INSERT INTO reservation_info_price 
+		(reservation_info_id, product_price_id, count) 
+		VALUES 
+		<foreach collection="list" item="item" separator=",">
+			(#{item.reservationInfoId}, #{item.productPriceId}, #{item.count})
+		</foreach>
+	</insert>
+	
+	<select id="selectReservationByEmail" resultMap="reservationInfo">
+		SELECT 
+		id 					AS reservationInfoId, 
+		product_id 			AS productId, 
+		display_info_id 	AS displayInfoId, 
+		reservation_name 	AS reservationName, 
+		reservation_tel 	AS reservationTelephone, 
+		reservation_email 	AS reservationEmail, 
+		cancel_flag 		AS cancelYn, 
+		create_date 		AS createDate, 
+		modify_date 		AS modifyDate, 
+		reservation_date 	AS reservationDate
+		FROM reservation_info 
+		WHERE reservation_email = #{reservationEmail}
+	</select>
+	 
+	<select id="selectTotalPriceByReservationId" resultType="long">
+		SELECT SUM(product_price.price * price.count) 
+		FROM reservation_info reservation 
+		INNER JOIN reservation_info_price price ON reservation.id = price.reservation_info_id 
+		INNER JOIN product_price ON price.product_price_id = product_price.id
+		WHERE reservation.id = #{reservationInfoId}
+	</select>
+	
+	<update id="updateCancelFlagById" parameterType="int">
+		UPDATE reservation_info
+		SET cancel_flag = #{cancelFlag}
+		WHERE id = #{reservationInfoId}
+	</update>
+</mapper>
